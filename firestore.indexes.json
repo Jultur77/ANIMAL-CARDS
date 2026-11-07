@@ -1,0 +1,27 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "listings",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "status", "order": "ASCENDING" },
+        { "fieldPath": "type", "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "listings",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "status", "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": [
+    { "collectionGroup": "players", "fieldPath": "cards", "indexes": [] },
+    { "collectionGroup": "players", "fieldPath": "available", "indexes": [] },
+    { "collectionGroup": "players", "fieldPath": "discoveries", "indexes": [] },
+    { "collectionGroup": "packSecrets", "fieldPath": "cards", "indexes": [] }
+  ]
+}

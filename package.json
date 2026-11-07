@@ -1,0 +1,38 @@
+{
+  "name": "animal-cards",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Jeu multijoueur de collection et de commerce de cartes animales",
+  "engines": {
+    "node": ">=24.15.0 <25"
+  },
+  "scripts": {
+    "start": "node --env-file-if-exists=.env server.js",
+    "dev": "node --env-file-if-exists=.env --watch server.js",
+    "test": "node --test game.test.js",
+    "check": "node --check server.js && node --check store.js && node --check catalog.js && node --check public/app.js",
+    "assets": "node prepare-assets.js",
+    "test:browser": "node browser.test.js",
+    "test:mobile": "node --test mobile.test.js",
+    "build:pages": "node build-pages.js",
+    "build:pages:cdn": "node build-pages.js --cdn",
+    "preview:pages:cdn": "node preview-pages.js --cdn",
+    "test:pages": "node --test pages-model.test.js",
+    "test:pages:gateway": "node --test pages-gateway.test.js",
+    "build:functions": "node build-functions.js",
+    "check:functions": "node --check build-functions.js && node --check functions/index.js && node --check functions/game-service.js && node --check functions/game-service.test.js",
+    "test:functions": "node build-functions.js && node --test functions/game-service.test.js",
+    "test:rules": "node firestore-rules.test.js",
+    "test:pages:browser": "node build-pages.js --cdn && node pages-browser.test.js",
+    "check:pages": "node --check build-pages.js && node --check preview-pages.js && node --check pages/app.js && node --check pages/firebase-client.js && node --check pages/game-model.js && node --check pages-model.test.js && node --check pages-browser.test.js"
+  },
+  "dependencies": {
+    "firebase": "13.2.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.64.1",
+    "@firebase/rules-unit-testing": "6.0.0",
+    "esbuild-wasm": "0.28.2"
+  }
+}

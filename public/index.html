@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#091410">
+  <meta name="description" content="Collectionne le monde sauvage. Ouvre des boosters, découvre 56 animaux et échange tes cartes avec de vrais joueurs.">
+  <title>Animal Cards — Collectionne le monde sauvage</title>
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/styles.css">
+  <script src="/app.js" type="module"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Aller au contenu</a>
+  <div id="loading" class="initial-loading"><span class="brand-mark">✦</span><strong>ANIMAL CARDS</strong><span class="muted">Exploration en cours…</span></div>
+  <div id="guest" hidden>
+    <header class="landing-header"><a class="brand" href="/" aria-label="Animal Cards, accueil"><span class="brand-mark">✦</span><span>ANIMAL<span class="brand-light">CARDS</span><small>LE MONDE SAUVAGE, À COLLECTIONNER.</small></span></a><button class="button subtle" data-command="credits">Crédits des images ↗</button></header>
+    <main id="landing-main" class="landing">
+      <section class="landing-story">
+        <div class="eyebrow"><span class="live-dot"></span> COLLECTION · COMMERCE · DÉCOUVERTE</div>
+        <h1>Le monde sauvage.<br><em>Entre tes mains.</em></h1>
+        <p class="landing-description">Une rencontre peut tout changer. Découvre des animaux extraordinaires, construis ta collection et trouve la perle rare sur le marché des joueurs.</p>
+        <div id="landing-cards" class="landing-cards" aria-label="Aperçu du catalogue, cartes non possédées"></div>
+        <div class="landing-facts"><div><strong>56</strong><span>espèces à découvrir</span></div><div><strong>7</strong><span>niveaux de rareté</span></div><div><strong>5 min</strong><span>une nouvelle boutique</span></div></div>
+      </section>
+      <section class="auth-panel" aria-labelledby="auth-title">
+        <div class="eyebrow">TON AVENTURE COMMENCE ICI</div>
+        <h2 id="auth-title">Rejoins la collection.</h2>
+        <p class="muted">De vrais animaux. De vrais échanges. Ta propre histoire.</p>
+        <div class="segmented auth-tabs" role="group" aria-label="Compte"><button class="active" data-auth="register" aria-pressed="true">Créer un compte</button><button data-auth="login" aria-pressed="false">Se connecter</button></div>
+        <form id="auth-form">
+          <label for="username">Ton pseudo</label><input id="username" name="username" autocomplete="username" minlength="3" maxlength="24" placeholder="Explorateur_77" required>
+          <label for="password">Mot de passe</label><input id="password" name="password" type="password" autocomplete="new-password" minlength="12" maxlength="128" placeholder="12 caractères minimum" required>
+          <p id="auth-error" class="form-error" role="alert"></p>
+          <button class="button primary wide" id="auth-submit" type="submit">Commencer ma collection <span>↗</span></button>
+        </form>
+        <div id="welcome-gift" class="welcome-gift"><span>✧</span><div><strong>Ton premier pas est offert</strong><p>2 400 pièces et 4 cartes de départ. Aucun achat en argent réel.</p></div></div>
+        <p class="auth-note">La progression est enregistrée sur le serveur. Garde ton mot de passe en sécurité : la récupération de compte n’est pas encore disponible.</p>
+      </section>
+    </main>
+    <footer class="landing-footer"><span>Une planète. Des rencontres infinies.</span><span>Pas de faux joueurs. Pas de ventes simulées.</span></footer>
+  </div>
+  <div id="game" class="app-shell" hidden>
+    <aside class="sidebar">
+      <a class="brand" href="#boutique"><span class="brand-mark">✦</span><span>ANIMAL<span class="brand-light">CARDS</span><small>COLLECTIONNE L’EXTRAORDINAIRE.</small></span></a>
+      <div class="sidebar-label">TON ESPACE</div>
+      <nav class="main-nav" aria-label="Navigation principale">
+        <button data-tab="inventaire"><span class="nav-icon">▦</span><span>Inventaire</span><small id="nav-count">0</small></button>
+        <button data-tab="boutique"><span class="nav-icon">◇</span><span>Boutique</span><span class="nav-dot"></span></button>
+        <button data-tab="encheres"><span class="nav-icon">⇄</span><span>Enchères</span></button>
+        <button data-tab="index"><span class="nav-icon">▤</span><span>Index</span></button>
+      </nav>
+      <div class="collection-progress"><span class="eyebrow">LE CARNET D’EXPLORATION</span><div><strong id="side-discovered">0 / 56</strong><span>espèces</span></div><progress id="side-progress" max="56" value="0" aria-label="Progression de l’Index"></progress><p>Chaque découverte améliore ta chance. Pour toujours.</p><button class="text-button" data-tab="index">Explorer mon Index ↗</button></div>
+      <div class="sidebar-bottom"><span class="connection"><span class="live-dot"></span><span id="connection-label">Serveur connecté</span></span><button class="sidebar-help" data-command="help">ⓘ Comment jouer</button><button class="sidebar-help" data-command="credits">↗ Crédits des illustrations</button><div class="profile"><span id="avatar" class="avatar">A</span><div><strong id="profile-name"></strong><small>Collectionneur</small></div><button id="logout" class="icon-button" aria-label="Se déconnecter" title="Se déconnecter">↪</button></div></div>
+    </aside>
+    <div class="workspace">
+      <header class="topbar"><div class="breadcrumb">L’EXPLORATION CONTINUE <span>/</span> <strong id="page-label">Boutique</strong></div><div class="wallets"><div class="wallet luck-wallet" title="Bonus permanent de chance"><span>✧</span><div><small>CHANCE</small><strong id="wallet-luck">+0 %</strong></div></div><div class="wallet coin-wallet"><span class="coin">◈</span><div><small>TON SOLDE</small><strong id="wallet-balance">0</strong></div></div></div><button id="logout-mobile" class="icon-button mobile-logout" aria-label="Se déconnecter" title="Se déconnecter">↪</button></header>
+      <div id="sync-warning" class="sync-warning" hidden role="status"></div>
+      <div id="pending-banner" class="pending-banner" hidden><span>Une transaction attend une confirmation. Ne la recrée pas.</span><button class="button small" id="retry-pending">Vérifier la transaction</button></div>
+      <main id="main-content" tabindex="-1"></main>
+      <footer class="game-footer"><span>ANIMAL CARDS <span class="muted">/</span> Le monde sauvage n’attend que toi.</span><span>Monnaie virtuelle uniquement · Collection responsable</span></footer>
+    </div>
+  </div>
+  <dialog id="modal" aria-labelledby="modal-title"><div class="modal-top"><span class="eyebrow">ANIMAL CARDS</span><button class="icon-button" id="close-modal" aria-label="Fermer la fenêtre">×</button></div><div id="modal-content"></div></dialog>
+  <div id="toasts" class="toasts" aria-live="polite" aria-atomic="false"></div>
+</body>
+</html>

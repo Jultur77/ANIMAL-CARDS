@@ -1,0 +1,19 @@
+{
+  "name": "animal-cards-functions",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "index.js",
+  "engines": {
+    "node": "22"
+  },
+  "scripts": {
+    "build": "node ../build-functions.js",
+    "check": "node --check index.js && node --check game-service.js",
+    "test": "node --test game-service.test.js"
+  },
+  "dependencies": {
+    "firebase-admin": "14.5.0",
+    "firebase-functions": "7.4.0"
+  }
+}

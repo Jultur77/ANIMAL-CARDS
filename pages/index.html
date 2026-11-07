@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10261e">
+  <meta name="description" content="Un carnet du monde sauvage : découvre 56 espèces, collectionne leurs cartes et retrouve les propositions des autres joueurs.">
+  <title>Animal Cards — Le carnet du monde sauvage</title>
+  <link rel="icon" href="./icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./styles.css">
+  <script type="module" src="./app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Aller au contenu</a>
+  <header class="site-header">
+    <a class="brand" href="#decouvrir" aria-label="Animal Cards, accueil"><span class="brand-symbol" aria-hidden="true">✳</span><span>ANIMAL CARDS<small>LE CARNET DU MONDE SAUVAGE</small></span></a>
+    <nav class="main-nav" aria-label="Navigation principale">
+      <a href="#decouvrir" data-route="decouvrir" aria-current="page">Découvrir</a>
+      <a href="#collection" data-route="collection">Collection</a>
+      <a href="#boutique" data-route="boutique">Boutique</a>
+      <a href="#marche" data-route="marche">Marché</a>
+    </nav>
+    <div class="header-account">
+      <button class="button primary small" id="open-auth" type="button">Rejoindre l’aventure <span aria-hidden="true">↗</span></button>
+      <div id="signed-account" class="signed-account" hidden><span id="account-name"></span><button class="button ghost small" id="logout" type="button">Déconnexion</button></div>
+    </div>
+  </header>
+
+  <div class="service-bar" role="status"><span class="status-dot" id="status-dot" aria-hidden="true"></span><span id="connection-status">Vérification de la connexion à Firebase…</span><button class="text-button" id="open-help" type="button">Comment jouer ?</button></div>
+  <div id="global-error" class="notice danger page-width" role="alert" hidden></div>
+  <div id="pending-banner" class="notice warning page-width" hidden><p id="pending-message">Une action attend sa confirmation. Ne la recrée pas et ne supprime pas le stockage du navigateur.</p><button class="button small" id="retry-pending" type="button">Vérifier la même transaction</button></div>
+
+  <section id="profile-setup" class="notice page-width" aria-labelledby="profile-title" hidden>
+    <div><p class="eyebrow">UNE DERNIÈRE ÉTAPE</p><h2 id="profile-title">Prépare ton carnet.</h2><p>Ton compte est connecté. Choisis le pseudo associé à ta collection.</p></div>
+    <form id="profile-form" class="inline-form"><label for="profile-username">Pseudo public</label><input id="profile-username" name="username" autocomplete="nickname" minlength="3" maxlength="24" required><button class="button primary" type="submit">Créer ma collection</button></form>
+  </section>
+
+  <main id="main-content" tabindex="-1">
+    <section id="discovery-view">
+      <div class="hero page-width">
+        <div class="hero-copy"><p class="eyebrow"><span aria-hidden="true">✦</span> LA NATURE A TANT À RACONTER</p><h1>Le monde sauvage.<br><em>Entre tes mains.</em></h1><p class="hero-description">Du renard de nos forêts aux créatures les plus insaisissables, chaque carte ouvre une nouvelle page. Pars à la rencontre de 56 espèces et compose une collection qui te ressemble.</p><div class="hero-actions"><button class="button primary" id="hero-start" type="button">Commencer ma collection <span aria-hidden="true">↗</span></button><a class="button outline" href="#catalogue">Feuilleter le catalogue</a></div><p class="hero-note">Une collection personnelle. Des propositions de vrais joueurs. Aucun marché simulé.</p></div>
+        <div class="hero-art" aria-label="Aperçu illustré du catalogue, cartes non possédées"><span class="orbit orbit-one" aria-hidden="true"></span><span class="orbit orbit-two" aria-hidden="true"></span><span class="art-coordinate" aria-hidden="true">EXPLORATION N° 001</span><div class="specimen specimen-back"><span class="specimen-number">CARNET · APERÇU</span><span class="specimen-animal" aria-hidden="true">🦋</span><span class="specimen-caption">Une rencontre inattendue</span></div><div class="specimen specimen-front"><span class="specimen-number">LE MONDE SAUVAGE</span><span class="specimen-animal" aria-hidden="true">🦊</span><strong>Renard roux</strong><span class="specimen-caption">Forêts & clairières</span><span class="specimen-stamp" aria-hidden="true">À DÉCOUVRIR ✦</span></div><p class="illustration-note">Illustrations emoji · aperçu, pas un inventaire</p></div>
+      </div>
+      <div class="facts page-width"><div><strong>56</strong><span>espèces à rencontrer</span></div><div><strong>7</strong><span>niveaux de rareté</span></div><div><strong>4</strong><span>cartes par booster</span></div><div><strong>5 min</strong><span>entre deux boutiques</span></div></div>
+      <section class="catalogue-section page-width" id="catalogue" aria-labelledby="catalogue-title"><div class="section-heading"><div><p class="eyebrow">UN MONDE À EXPLORER</p><h2 id="catalogue-title">Le carnet des espèces.</h2></div><p>Un aperçu du catalogue, sans cartes attribuées à un joueur.</p></div><div class="filters"><label class="search-label" for="catalogue-search">Rechercher une espèce<input id="catalogue-search" type="search" placeholder="Renard, océan, forêt…"></label><label for="catalogue-rarity">Rareté<select id="catalogue-rarity"><option value="all">Toutes les raretés</option></select></label></div><p id="catalogue-count" class="result-count" role="status"></p><div id="catalogue-grid" class="card-grid"></div></section>
+    </section>
+
+    <section id="player-view" class="page-width player-view" hidden>
+      <div class="player-heading"><div><p class="eyebrow">TON EXPLORATION CONTINUE</p><h1 id="page-title">Ma collection.</h1><p id="page-description" class="muted"></p></div><div class="wallet"><span>PIÈCES VIRTUELLES</span><strong id="wallet-balance">—</strong><small id="wallet-income">Revenu : —</small></div></div>
+      <div class="player-stats"><div><span>Cartes possédées</span><strong id="owned-count">—</strong></div><div><span>Espèces découvertes</span><strong id="discovered-count">—</strong></div><div><span>Bonus de chance</span><strong id="luck-value">—</strong></div><button class="button outline small" id="claim-income" type="button">Récupérer les revenus</button></div>
+      <div id="player-content"></div>
+    </section>
+    <section id="signin-required" class="page-width empty-state" hidden><span class="empty-symbol" aria-hidden="true">◇</span><p class="eyebrow">TON CARNET T’ATTEND</p><h1>Une aventure à ton nom.</h1><p>Connecte-toi pour retrouver ta collection, ta boutique et les propositions du marché.</p><button class="button primary" id="signin-required-button" type="button">Se connecter ou créer un compte</button></section>
+    <noscript><div class="notice page-width">JavaScript est nécessaire pour afficher le catalogue et se connecter. Aucun achat ni échange ne peut être effectué sans lui.</div></noscript>
+  </main>
+
+  <footer class="site-footer page-width"><a class="brand footer-brand" href="#decouvrir"><span class="brand-symbol" aria-hidden="true">✳</span><span>ANIMAL CARDS<small>UNE PLANÈTE. MILLE RENCONTRES.</small></span></a><p>Les pièces n’ont aucune valeur monétaire.<br>Illustrations emoji ; aucune photographie présentée comme téléchargée.</p><button class="text-button" id="open-credits" type="button">Illustrations & informations</button></footer>
+  <div id="toast" class="toast" role="status" hidden></div>
+
+  <dialog id="auth-dialog" aria-labelledby="auth-title"><div class="dialog-heading"><p class="eyebrow">OUVRE TON CARNET</p><button class="icon-button" data-close-dialog type="button" aria-label="Fermer">×</button></div><h2 id="auth-title">Bienvenue dans l’aventure.</h2><p class="muted">Connexion par e-mail avec Firebase Authentication.</p><div class="segmented" role="group" aria-label="Mode de connexion"><button id="choose-register" class="active" type="button" aria-pressed="true">Créer un compte</button><button id="choose-login" type="button" aria-pressed="false">Se connecter</button></div><form id="auth-form"><div id="register-name-field"><label for="auth-username">Pseudo public</label><input id="auth-username" name="username" autocomplete="nickname" minlength="3" maxlength="24" required></div><label for="auth-email">Adresse e-mail</label><input id="auth-email" name="email" type="email" autocomplete="email" required><label for="auth-password">Mot de passe</label><input id="auth-password" name="password" type="password" autocomplete="new-password" minlength="12" required><p id="password-hint" class="field-note">Au moins 12 caractères. Ne réutilise pas un mot de passe important.</p><p id="auth-error" class="form-error" role="alert"></p><button id="auth-submit" class="button primary wide" type="submit">Créer mon compte</button><button id="reset-password" class="text-button reset-button" type="button" hidden>Mot de passe oublié ?</button></form><p class="field-note">Le compte et les données du jeu nécessitent des services Firebase activés et des règles de sécurité déployées. Une erreur n’est jamais remplacée par une réussite simulée.</p></dialog>
+
+  <dialog id="action-dialog" aria-labelledby="action-title"><div class="dialog-heading"><p class="eyebrow">UNE NOUVELLE RENCONTRE</p><button class="icon-button" data-close-dialog type="button" aria-label="Fermer">×</button></div><h2 id="action-title"></h2><div id="action-content"></div></dialog>
+  <dialog id="help-dialog" aria-labelledby="help-title"><div class="dialog-heading"><p class="eyebrow">LE GUIDE DE L’EXPLORATEUR</p><button class="icon-button" data-close-dialog type="button" aria-label="Fermer">×</button></div><h2 id="help-title">Une carte, une découverte.</h2><ol class="guide-list"><li><strong>Commence ton carnet.</strong> Crée un compte puis ton profil de collectionneur.</li><li><strong>Visite ta boutique.</strong> Ses six emplacements sont renouvelables toutes les cinq minutes. Un booster contient quatre cartes.</li><li><strong>Enrichis ton Index.</strong> Une découverte reste enregistrée même après une vente ou un échange.</li><li><strong>Rencontre les joueurs.</strong> Ventes, enchères et échanges utilisent les propositions réellement présentes dans Firebase. Un marché vide reste vide.</li></ol><div class="notice warning"><p>Après une coupure pendant une action, vérifie la transaction en attente avant de recommencer. Les revenus rattrapables sont plafonnés à 24 heures. Une enchère expirée doit être clôturée par une action en ligne : aucun serveur de clôture automatique n’est supposé.</p></div></dialog>
+  <dialog id="credits-dialog" aria-labelledby="credits-title"><div class="dialog-heading"><p class="eyebrow">EN TOUTE TRANSPARENCE</p><button class="icon-button" data-close-dialog type="button" aria-label="Fermer">×</button></div><h2 id="credits-title">Des espèces, pas des faux-semblants.</h2><p>Cette interface utilise les emoji affichés par ton appareil. Aucun crédit photographique ni téléchargement de photographie n’est revendiqué.</p><p>Les aperçus du catalogue ne sont ni des cartes possédées ni des ventes. Aucun joueur artificiel n’alimente le marché.</p><p>Aucun module Google Analytics n’est chargé par cette version. Le fonctionnement en ligne dépend de Firebase Authentication, de Firestore et de ses règles de sécurité ; l’hébergement statique ne les remplace pas.</p></dialog>
+</body>
+</html>

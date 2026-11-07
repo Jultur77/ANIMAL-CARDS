@@ -1,0 +1,40 @@
+rules_version = '2';
+
+// ÉCRITURES CLIENTES FERMÉES — les opérations du jeu passent par gameAction.
+// Le service serveur valide les transitions et écrit avec le SDK Admin.
+// Ces règles protègent les accès clients ; elles ne valident pas les écritures Admin.
+// Ne pas ouvrir les écritures clientes pour contourner un refus du serveur.
+// Préparation testée localement, sans validation ni déploiement en production.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    match /players/{uid} {
+      allow get: if signedIn() && request.auth.uid == uid;
+      allow list, create, update, delete: if false;
+    }
+
+    match /events/{eventId} {
+      // La lecture d'un reçu absent permet de rechercher une action en attente.
+      // Un reçu existant n'est consultable que par son auteur.
+      allow get: if signedIn()
+        && (!exists(/databases/$(database)/documents/events/$(eventId))
+          || resource.data.actor == request.auth.uid);
+      allow list, create, update, delete: if false;
+    }
+
+    match /listings/{listingId} {
+      allow get: if signedIn();
+      allow list: if signedIn()
+        && request.query.limit != null
+        && request.query.limit <= 40;
+      allow create, update, delete: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
