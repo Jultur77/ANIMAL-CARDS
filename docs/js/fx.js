@@ -49,7 +49,7 @@ function particles(x, y, color, amount) {
       p.x += p.vx; p.y += p.vy; p.vy += 0.12; p.vx *= 0.985; p.life -= 0.012;
       ctx.globalAlpha = Math.max(p.life, 0);
       ctx.fillStyle = p.color;
-      ctx.beginPath(); ctx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(p.x, p.y, Math.max(0, p.size * p.life), 0, Math.PI * 2); ctx.fill();
     }
     if (alive) requestAnimationFrame(step); else canvas.remove();
   };

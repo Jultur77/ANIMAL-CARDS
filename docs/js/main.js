@@ -54,8 +54,7 @@ function renderNotConfigured() {
     <ol class="steps">
       <li>Crée un projet gratuit sur <a href="https://supabase.com" target="_blank" rel="noopener">supabase.com</a>.</li>
       <li>Exécute <code>supabase/schema.sql</code> puis <code>supabase/seed.sql</code> dans le SQL Editor.</li>
-      <li>Renseigne l’URL et la clé <strong>anon</strong> dans <code>web/config.js</code>
-        (ou dans les variables <code>SUPABASE_URL</code> et <code>SUPABASE_ANON_KEY</code> du dépôt GitHub).</li>
+      <li>Renseigne l’URL et la clé <strong>anon</strong> dans <code>docs/config.js</code>.</li>
     </ol>
     <p class="muted">Tout est expliqué pas à pas dans le fichier README.md.</p>
   </div></main>`;
@@ -126,10 +125,26 @@ async function sync({ state = true, inv = true, market = false } = {}) {
 /* -------------------------------------------------------- authentification */
 function renderAuth(mode = 'login') {
   const signup = mode === 'signup';
-  app.innerHTML = `<main class="center-screen auth-screen">
-    <div class="panel narrow auth-card">
-      <div class="brand big">🐾 ANIMAL CARDS</div>
-      <p class="tagline">Collectionne 126 animaux, ouvre des boosters et échange avec les autres joueurs.</p>
+  app.innerHTML = `<main class="auth-screen">
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="brand"><span class="brand-logo" aria-hidden="true">🐾</span><span class="brand-text">ANIMAL <b>CARDS</b></span></div>
+      <h1 class="hero-title" id="hero-title"><span class="hash" aria-hidden="true">#</span>Collecte<br>Échange<br>Domine</h1>
+      <p class="hero-sub">126 vrais animaux à collectionner. Ouvre des boosters, enchéris et échange avec de vrais joueurs.</p>
+      <div class="hero-stickers" aria-hidden="true">
+        <div class="sticker s1"><span>🦁</span><b>Lion</b><small>Légendaire</small></div>
+ <div class="sticker s2"><span>🦈</span><b>Requin blanc</b><small>Mythique</small></div>
+ <div class="sticker s3"><span>🦖</span><b>T-Rex</b><small>Secret</small></div>
+        <svg class="squiggle q1" viewBox="0 0 120 80"><path d="M5 60 C 25 5, 45 75, 65 30 S 100 10, 110 25"/><path d="M98 14 L111 25 L95 31"/></svg>
+        <svg class="squiggle q2" viewBox="0 0 120 80"><path d="M110 15 C 90 70, 65 0, 45 50 S 15 70, 8 55"/><path d="M20 50 L7 56 L13 69"/></svg>
+      </div>
+      <div class="spin-badge" aria-hidden="true">
+        <svg viewBox="0 0 100 100"><defs><path id="badge-circle" d="M50,50 m-38,0 a38,38 0 1,1 76,0 a38,38 0 1,1 -76,0"/></defs>
+   <text><textPath href="#badge-circle">GRATUIT ✦ MULTIJOUEUR ✦ 126 ANIMAUX ✦</textPath></text></svg>
+        <span>↗</span>
+      </div>
+    </section>
+    <div class="panel auth-card">
+      <p class="auth-kicker">${signup ? 'Rejoins la partie' : 'Content de te revoir'}</p>
       <div class="segmented" role="tablist" aria-label="Connexion ou inscription">
  <button role="tab" aria-selected="${!signup}" data-mode="login">Connexion</button>
  <button role="tab" aria-selected="${signup}" data-mode="signup">Inscription</button>
@@ -245,7 +260,7 @@ const VIEWS = {
 function renderShell() {
   app.innerHTML = `<a class="skip-link" href="#view" data-skip>Aller au contenu</a>
     <header class="topbar">
-      <a class="brand" href="#/inventaire" aria-label="ANIMAL CARDS, accueil"><span aria-hidden="true">🐾</span><span class="brand-text">ANIMAL CARDS</span></a>
+      <a class="brand" href="#/inventaire" aria-label="ANIMAL CARDS, accueil"><span class="brand-logo" aria-hidden="true">🐾</span><span class="brand-text">ANIMAL <b>CARDS</b></span></a>
       <nav class="tabs" aria-label="Navigation principale">
  ${Object.entries(VIEWS).map(([key, v]) => `<a href="#/${key}" data-nav="${key}">
           <span class="tab-icon" aria-hidden="true">${v.icon}</span><span class="tab-label">${v.title}</span></a>`).join('')}
@@ -256,6 +271,9 @@ function renderShell() {
         <button class="icon-btn" data-account aria-label="Mon compte">👤</button>
       </div>
     </header>
+    <div class="ticker" aria-hidden="true"><div class="ticker-track">${
+      Array(2).fill(['Ouvre des boosters', 'Enchéris', 'Échange', 'Complète l’Index', 'Booste ta chance', 'Trouve les Secrets']
+ .map(t => `<span>${t}</span><i>✦</i>`).join('')).join('')}</div></div>
     <main id="view" tabindex="-1"></main>`;
   renderStats();
 }

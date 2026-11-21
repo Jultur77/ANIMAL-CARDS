@@ -154,7 +154,7 @@ try {
   const { ctx, page, errors } = await newPage({ width: 390, height: 844 }, CONF_EMPTY);
   await page.goto(URL0);
   await page.waitForSelector('h1');
-  check((await page.locator('h1').innerText()).includes('Configuration requise'), 'écran « Configuration requise »');
+  check((await page.locator('h1').innerText()).toLowerCase().includes('configuration requise'), 'écran « Configuration requise »');
   check(errors.length === 0, 'aucune erreur JavaScript' + (errors.length ? ' : ' + errors.join(' | ') : ''));
   await ctx.close();
 } catch (e) {
