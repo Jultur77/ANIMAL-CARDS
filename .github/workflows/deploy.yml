@@ -1,0 +1,47 @@
+# Publie le dossier web/ sur GitHub Pages à chaque push sur main (aucune étape de build).
+name: Déployer sur GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      # Facultatif : si les variables SUPABASE_URL et SUPABASE_ANON_KEY existent
+      # (Settings > Secrets and variables > Actions > Variables), elles remplacent web/config.js.
+      # La clé anon est publique par nature : la sécurité repose sur RLS et les fonctions SQL.
+      - name: Écrire web/config.js depuis les variables du dépôt
+        env:
+          SUPABASE_URL: ${{ vars.SUPABASE_URL || secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ vars.SUPABASE_ANON_KEY || secrets.SUPABASE_ANON_KEY }}
+        run: |
+          if [ -n "$SUPABASE_URL" ] && [ -n "$SUPABASE_ANON_KEY" ]; then
+            node -e 'const fs=require("fs");fs.writeFileSync("web/config.js","export const CONFIG = "+JSON.stringify({supabaseUrl:process.env.SUPABASE_URL.trim(),supabaseAnonKey:process.env.SUPABASE_ANON_KEY.trim()},null,2)+";\n")'
+            echo "config.js généré depuis les variables du dépôt."
+          else
+            echo "Variables absentes : web/config.js est publié tel quel."
+          fi
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: web
+      - id: deployment
+        uses: actions/deploy-pages@v4
