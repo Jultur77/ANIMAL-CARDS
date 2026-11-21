@@ -59,6 +59,22 @@ async function fullRun(viewport, reducedMotion) {
   check(await page.inputValue('#pseudo-form input') === 'Renard_77', 'pseudo prérempli depuis user_metadata');
   await page.click('#pseudo-form button[type="submit"], #pseudo-form .btn-primary');
   await page.waitForSelector('#h-inv', { timeout: 8000 });
+
+  // Tutoriel au premier lancement
+  await page.waitForSelector('.tuto', { timeout: 5000 });
+  check(true, 'tutoriel affiché au premier lancement');
+  check(await noOverflow(page), 'tutoriel : pas de débordement horizontal');
+  for (let i = 0; i < 3; i++) { await page.click('[data-tuto-next]'); await page.waitForTimeout(150); }
+  await page.click('[data-tuto-skip]');
+  await page.waitForSelector('.tuto-backdrop', { state: 'detached', timeout: 4000 });
+  check(true, 'tutoriel : « Passer » le ferme');
+  await page.click('[data-help]');
+  await page.waitForSelector('.tuto', { timeout: 4000 });
+  check(true, 'bouton « ? » rouvre le tutoriel');
+  await page.keyboard.press('Escape');
+  await page.waitForSelector('.tuto-backdrop', { state: 'detached', timeout: 4000 });
+  check(true, 'tutoriel : Échap le ferme');
+
   check(await page.locator('#list button[data-card]').count() === 12, 'inventaire : 12 cartes distinctes');
   check(await noOverflow(page), 'inventaire : pas de débordement horizontal');
 

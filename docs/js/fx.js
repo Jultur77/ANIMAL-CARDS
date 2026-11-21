@@ -1,6 +1,6 @@
 // Ouverture de booster : animation, révélation carte par carte, particules,
 // lumière, secousse d'écran et son synthétisé (désactivable).
-import { cardHTML } from './art.js';
+import { cardHTML, boosterSVG } from './art.js';
 import { esc, pct, coins, reducedMotion, $ } from './ui.js';
 
 const SOUND_KEY = 'animal-cards.sound';   // simple préférence d'affichage, rien de critique
@@ -82,9 +82,9 @@ export function openPack(result, lookup, boosterRarity) {
     overlay.innerHTML = `
       <div class="pack-stage">
         <button class="booster booster-big r${boosterRarity.id}" style="--rc:${boosterRarity.color}" aria-label="Ouvrir le booster">
-          <span class="booster-glow"></span><span class="booster-logo">🐾</span>
-          <span class="booster-title">Booster ${esc(boosterRarity.name)}</span>
-          <span class="booster-hint">Touche pour ouvrir</span>
+          ${boosterSVG(boosterRarity, { cards: items.length })}<span class="booster-foil"></span>
+   <span class="sr-only">Booster ${esc(boosterRarity.name)}</span>
+   <span class="booster-hint">Touche pour déchirer</span>
         </button>
         <div class="reveal-row" hidden>
           ${items.map((it, i) => `<div class="reveal-slot" style="--i:${i};--rc:${it.rarity.color}">

@@ -71,6 +71,77 @@ export function cardSVG(card, rarity, { hidden = false } = {}) {
   </svg>`;
 }
 
+/* ------------------------------------------------------------------ boosters
+   Sachet imprimé dessiné à la main en SVG : bords sertis, trame de points, bandeau
+   en biais, tampon « 5 cartes », code-barres, pointillés « déchirer ici ». */
+let uid = 0;
+const rnd = seed => () => ((seed = Math.imul(seed ^ (seed >>> 15), 2246822507) + 0x6d2b79f5 | 0) >>> 0) / 4294967296;
+
+function crimp(y0, y1, dir) {   // bord serti en dents de scie
+  let d = `M8 ${y0}`;
+  for (let x = 8, i = 0; x <= 192; x += 4, i++) d += ` L${x} ${i % 2 ? y0 + dir * 3 : y0}`;
+  return `${d} L192 ${y1} L8 ${y1}Z`;
+}
+
+export function boosterSVG(rarity, { cards = 5 } = {}) {
+  const id = `bk${++uid}`, c = rarity.color, name = String(rarity.name || '').toUpperCase();
+  const r = rnd(hash(name) || 7);
+  const size = Math.min(30, 230 / Math.max(name.length, 4));
+  const bars = [];
+  for (let x = 26; x < 82;) { const w = 1 + Math.floor(r() * 3); bars.push(`<rect x="${x}" y="236" width="${w}" height="16"/>`); x += w + 1 + Math.floor(r() * 2); }
+  const pips = Array.from({ length: Math.max(1, rarity.id + 1) }, (_, i) =>
+    `<path transform="translate(${30 + i * 13} 214) rotate(${(r() - 0.5) * 20})" d="M0-5 L1.6-1.6 L5 0 L1.6 1.6 L0 5 L-1.6 1.6 L-5 0 L-1.6-1.6Z"/>`).join('');
+  return `<svg class="booster-svg" viewBox="0 0 200 280" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <defs>
+      <pattern id="${id}d" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(25)"><circle cx="3.5" cy="3.5" r="1.5" fill="#141414"/></pattern>
+      <pattern id="${id}r" width="3" height="10" patternUnits="userSpaceOnUse"><rect width="1.4" height="10" fill="#141414" opacity=".22"/></pattern>
+      <linearGradient id="${id}m" x1="0" y1="0" x2="1" y2="1"><stop offset=".35" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#fff" stop-opacity=".9"/></linearGradient>
+      <mask id="${id}k"><rect width="200" height="280" fill="url(#${id}m)"/></mask>
+    </defs>
+    <path d="M8 22 H192 V258 H8Z" fill="${c}"/>
+    <rect x="8" y="22" width="184" height="236" fill="url(#${id}d)" opacity=".28" mask="url(#${id}k)"/>
+    <path d="${crimp(0, 24, 1)}" fill="${c}"/><path d="${crimp(0, 24, 1)}" fill="url(#${id}r)"/>
+    <path d="${crimp(280, 256, -1)}" fill="${c}"/><path d="${crimp(280, 256, -1)}" fill="url(#${id}r)"/>
+    <path d="M8 23.5 H192 M8 256.5 H192" stroke="#141414" stroke-width="1.2" opacity=".5"/>
+    <path d="M12 33 H188" stroke="#141414" stroke-width="1" stroke-dasharray="3 3" opacity=".55"/>
+    <text x="186" y="30" text-anchor="end" font-size="5.5" font-family="Space Grotesk, sans-serif" font-weight="700" fill="#141414" opacity=".7">DÉCHIRER ICI ✂</text>
+    <text x="18" y="56" font-size="15" font-family="Archivo Black, Arial Black, sans-serif" fill="#141414" letter-spacing=".5">ANIMAL</text>
+    <text x="18" y="72" font-size="15" font-family="Archivo Black, Arial Black, sans-serif" fill="#FDFDFF" stroke="#141414" stroke-width="1.1" paint-order="stroke" letter-spacing=".5">CARDS</text>
+    <text x="18" y="84" font-size="6.5" font-family="Space Grotesk, sans-serif" font-weight="700" fill="#141414" letter-spacing="1.2">SÉRIE 01 · FAUNE DU MONDE</text>
+    <g transform="translate(118 118) rotate(-16)" fill="#141414" opacity=".88">
+      <ellipse cx="0" cy="14" rx="19" ry="16"/><ellipse cx="-21" cy="-8" rx="7" ry="9.5" transform="rotate(-24 -21 -8)"/>
+      <ellipse cx="-8" cy="-20" rx="7" ry="10"/><ellipse cx="8" cy="-20" rx="7" ry="10"/>
+      <ellipse cx="21" cy="-8" rx="7" ry="9.5" transform="rotate(24 21 -8)"/>
+    </g>
+    <path d="M8 158 L192 118 V172 L8 212Z" fill="#141414"/>
+    <text transform="translate(100 172) rotate(-12.3)" text-anchor="middle" font-size="${size}" font-family="Archivo Black, Arial Black, sans-serif" fill="#FDFDFF">${esc(name)}</text>
+    <g fill="#141414">${pips}</g>
+    <g transform="translate(160 64) rotate(12)">
+      <circle r="23" fill="#FDFDFF" stroke="#141414" stroke-width="2"/><circle r="19" fill="none" stroke="#141414" stroke-width=".8" stroke-dasharray="2 2"/>
+      <text y="5" text-anchor="middle" font-size="19" font-family="Archivo Black, Arial Black, sans-serif" fill="#141414">${cards}</text>
+      <text y="14" text-anchor="middle" font-size="5.5" font-family="Space Grotesk, sans-serif" font-weight="700" fill="#141414" letter-spacing=".6">CARTES</text>
+    </g>
+    <rect x="22" y="232" width="64" height="22" fill="#FDFDFF"/><g fill="#141414">${bars.join('')}</g>
+    <text x="182" y="248" text-anchor="end" font-size="6" font-family="Space Grotesk, sans-serif" font-weight="700" fill="#141414">N° ${String(Math.floor(r() * 9000) + 1000)}</text>
+  </svg>`;
+}
+
+/* --------------------------------------------------- flèches dessinées à la main
+   Tracé légèrement tremblé (deux passages comme au feutre) et pointe aux branches inégales. */
+export function scribbleArrow({ from = [10, 70], c1 = [40, 0], c2 = [80, 90], to = [112, 22], seed = 3, cls = '' } = {}) {
+  const r = rnd(seed);
+  const at = t => [0, 1].map(k => (1 - t) ** 3 * from[k] + 3 * (1 - t) ** 2 * t * c1[k] + 3 * (1 - t) * t * t * c2[k] + t ** 3 * to[k]);
+  const line = (jit, dx = 0, dy = 0) => Array.from({ length: 23 }, (_, i) => {
+    const [x, y] = at(i / 22);
+    return `${i ? 'L' : 'M'}${(x + dx + (r() - 0.5) * jit).toFixed(1)} ${(y + dy + (r() - 0.5) * jit).toFixed(1)}`;
+  }).join(' ');
+  const [ex, ey] = to, [px, py] = at(0.93), a = Math.atan2(ey - py, ex - px);
+  const arm = (da, len) => `${(ex + Math.cos(a + da) * len).toFixed(1)} ${(ey + Math.sin(a + da) * len).toFixed(1)}`;
+  return `<svg class="scribble ${cls}" viewBox="0 0 120 100" aria-hidden="true">
+    <path class="s-main" d="${line(1.6)}"/><path class="s-pass" d="${line(1.2, 0.9, 0.6)}"/>
+    <path class="s-head" d="M${arm(2.55, 17)} L${ex} ${ey} L${arm(-2.35, 13)}"/></svg>`;
+}
+
 // Élément carte complet (cadre, brillance holographique, infos).
 export function cardHTML(card, rarity, { count = 0, hidden = false, locked = 0, extra = '', tag = 'button', attrs = '' } = {}) {
   return `<${tag} class="card r${rarity.id} ${hidden ? 'is-hidden' : ''}" style="--rc:${rarity.color}" data-tilt data-card="${esc(card.id)}" ${attrs}

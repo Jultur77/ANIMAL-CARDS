@@ -3,8 +3,9 @@
 // fonctions SQL côté serveur, et on recharge l'état après chacune d'elles.
 import { configured, auth, api } from './api.js';
 import { esc, $, $$, coins, pct, duration, dateTime, toast, modal, confirmBox, busy } from './ui.js';
-import { cardHTML, enableTilt, biomeLabel } from './art.js';
+import { cardHTML, enableTilt, biomeLabel, boosterSVG, scribbleArrow } from './art.js';
 import { sound, openPack } from './fx.js';
+import { showTutorial, tutorialSeen } from './tutorial.js';
 
 const app = $('#app');
 const COIN = '🪙';
@@ -76,6 +77,7 @@ async function start(session) {
     S.unwatch = api.watchMarket(onMarketChange);
     clearInterval(S.timer);
     S.timer = setInterval(tick, 1000);
+    if (!tutorialSeen(S.user.id)) tutorial();
   } catch (error) {
     app.innerHTML = `<main class="center-screen"><div class="panel narrow">
       <h1>Impossible de charger le jeu</h1><p>${esc(error.message)}</p>
@@ -131,11 +133,13 @@ function renderAuth(mode = 'login') {
       <h1 class="hero-title" id="hero-title"><span class="hash" aria-hidden="true">#</span>Collecte<br>Échange<br>Domine</h1>
       <p class="hero-sub">126 vrais animaux à collectionner. Ouvre des boosters, enchéris et échange avec de vrais joueurs.</p>
       <div class="hero-stickers" aria-hidden="true">
-        <div class="sticker s1"><span>🦁</span><b>Lion</b><small>Légendaire</small></div>
- <div class="sticker s2"><span>🦈</span><b>Requin blanc</b><small>Mythique</small></div>
- <div class="sticker s3"><span>🦖</span><b>T-Rex</b><small>Secret</small></div>
-        <svg class="squiggle q1" viewBox="0 0 120 80"><path d="M5 60 C 25 5, 45 75, 65 30 S 100 10, 110 25"/><path d="M98 14 L111 25 L95 31"/></svg>
-        <svg class="squiggle q2" viewBox="0 0 120 80"><path d="M110 15 C 90 70, 65 0, 45 50 S 15 70, 8 55"/><path d="M20 50 L7 56 L13 69"/></svg>
+        <div class="sticker s1"><i class="tape"></i><span>🦁</span><b>Lion</b><small>Légendaire</small></div>
+        <div class="sticker s2"><i class="tape"></i><span>🦈</span><b>Requin blanc</b><small>Mythique</small></div>
+ <div class="sticker s3"><i class="tape"></i><span>🦖</span><b>T-Rex</b><small>Secret</small></div>
+        <p class="note n1">la plus rare&nbsp;!</p>
+        ${scribbleArrow({ from: [8, 30], c1: [40, 4], c2: [70, 20], to: [104, 70], seed: 11, cls: 'q1' })}
+ <p class="note n2">ça commence ici</p>
+ ${scribbleArrow({ from: [10, 20], c1: [30, 85], c2: [80, 90], to: [112, 52], seed: 5, cls: 'q2' })}
       </div>
       <div class="spin-badge" aria-hidden="true">
         <svg viewBox="0 0 100 100"><defs><path id="badge-circle" d="M50,50 m-38,0 a38,38 0 1,1 76,0 a38,38 0 1,1 -76,0"/></defs>
@@ -160,7 +164,16 @@ function renderAuth(mode = 'login') {
       </form>
       ${signup ? '<p class="muted small">Pseudo : 3 à 20 caractères (lettres, chiffres, _ ou -). Mot de passe : 8 caractères minimum.</p>'
  : '<button class="link-btn" data-forgot>Mot de passe oublié ?</button>'}
-    </div></main>`;
+    </div>
+    <section class="how" aria-labelledby="how-title">
+      <h2 id="how-title">Comment on joue&nbsp;?</h2>
+      <ol class="how-steps">
+ <li><b>01</b><h3>Crée ton compte</h3><p>C’est gratuit. Tu reçois tout de suite des pièces 🪙 et quelques cartes pour démarrer.</p></li>
+        <li><b>02</b><h3>Ouvre des boosters</h3><p>Dans la <em>Boutique</em>, chaque booster contient plusieurs cartes. Plus il est rare, meilleures sont les cartes.</p></li>
+        <li><b>03</b><h3>Complète l’Index</h3><p>Chaque nouvel animal découvert augmente ta <em>chance</em> pour toujours. Ta collection te rapporte aussi des pièces chaque heure.</p></li>
+        <li><b>04</b><h3>Vends &amp; échange</h3><p>Au <em>Marché</em>, avec de vrais joueurs : prix fixe, enchères ou échange carte contre carte.</p></li>
+      </ol>
+    </section></main>`;
   $$('[data-mode]').forEach(b => b.addEventListener('click', () => renderAuth(b.dataset.mode)));
   $('[data-forgot]')?.addEventListener('click', forgotPassword);
   const form = $('#auth-form');
@@ -268,6 +281,7 @@ function renderShell() {
       <div class="stats" id="stats" aria-live="polite"></div>
       <div class="top-actions">
         <button class="icon-btn" data-sound aria-pressed="${sound.on}" aria-label="Son">${sound.on ? '🔊' : '🔇'}</button>
+        <button class="icon-btn help-btn" data-help aria-label="Comment jouer ?" title="Comment jouer ?">?</button>
         <button class="icon-btn" data-account aria-label="Mon compte">👤</button>
       </div>
     </header>
@@ -276,6 +290,14 @@ function renderShell() {
  .map(t => `<span>${t}</span><i>✦</i>`).join('')).join('')}</div></div>
     <main id="view" tabindex="-1"></main>`;
   renderStats();
+}
+
+// Tutoriel : s'affiche à la première connexion, puis via le bouton « ? ».
+function tutorial() {
+  return showTutorial({
+    userId: S.user.id, username: S.profile?.username, settings: S.settings, rarities: S.rarities, total: S.cards.length,
+    go: view => { location.hash = `#/${view}`; }
+  });
 }
 
 function renderStats() {
@@ -328,6 +350,7 @@ async function globalClick(e) {
     return toast(sound.on ? 'Son activé' : 'Son coupé');
   }
   if (t.closest('[data-account]')) return accountModal();
+  if (t.closest('[data-help]')) return tutorial();
   if (!t.closest('#view')) return;
 
   const el = sel => t.closest(sel);
@@ -641,8 +664,7 @@ function renderShop() {
       ${S.shop.length ? S.shop.map(o => {
         const r = R(o.tier), out = o.stock === 0, poor = Number(p.balance) < o.price;
         return `<article class="shop-item r${r.id} ${out ? 'sold-out' : ''}" style="--rc:${r.color}">
-          <div class="booster r${r.id}" aria-hidden="true"><span class="booster-glow"></span>
-     <span class="booster-logo">🐾</span><span class="booster-title">Booster<br>${esc(r.name)}</span></div>
+          <div class="booster r${r.id}" aria-hidden="true">${boosterSVG(r, { cards: S.settings.cards_per_pack })}<span class="booster-foil"></span></div>
    <div class="shop-meta">
             <h2>Booster ${esc(r.name)}</h2>
      <p class="price">${COIN} ${coins(o.price)}</p>
