@@ -1,4 +1,4 @@
-// Test de fumée de l'interface : ouvre web/ dans Chromium avec un FAUX Supabase (tests/ui-mock-supabase.js).
+// Test de fumée de l'interface : ouvre docs/ dans Chromium avec un FAUX Supabase (tests/ui-mock-supabase.js).
 // Lancer : npm run test:ui   (nécessite Playwright ; le test est ignoré s'il est absent)
 import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
@@ -13,7 +13,7 @@ catch {
 }
 const { chromium } = pw;
 
-const root = fileURLToPath(new URL('../web/', import.meta.url));
+const root = fileURLToPath(new URL('../docs/', import.meta.url));
 const mock = await readFile(new URL('./ui-mock-supabase.js', import.meta.url), 'utf8');
 const types = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.svg': 'image/svg+xml' };
 const server = createServer(async (req, res) => {
